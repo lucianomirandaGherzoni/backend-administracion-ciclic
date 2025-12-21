@@ -14,6 +14,21 @@ app.use(cors()); // Permitir conexiones desde otros dominios (tu frontend)
 app.use(express.json()); // Habilita la lectura de JSON en el body
 app.use(express.urlencoded({ extended: true })); // Habilita lectura de formularios
 
+// Ruta raíz - Mensaje de bienvenida
+app.get('/', (req, res) => {
+    res.json({
+        status: 'success',
+        message: '🚀 Backend de Administración Ciclic funcionando correctamente',
+        version: '1.0.0',
+        endpoints: {
+            eventos: '/api/v1/eventos',
+            galeria: '/api/v1/galeria',
+            uploadImage: '/api/v1/upload-image',
+            deleteImage: '/api/v1/delete-image'
+        }
+    });
+});
+
 // Montamos las rutas de la API
 // Esto habilitará automáticamente:
 // - /api/v1/galeria
