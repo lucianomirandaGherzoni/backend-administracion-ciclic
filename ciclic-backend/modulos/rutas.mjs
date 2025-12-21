@@ -1,11 +1,15 @@
 // modulos/rutas.mjs
 import { Router } from 'express';
 import controlador from './controlador.mjs';
+import { login } from './auth.mjs';
 import multer from 'multer';
 
 const rutasApi = Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
+// --- Ruta de Autenticación ---
+rutasApi.post('/api/v1/login', login);
 
 // --- Rutas Galería ---
 rutasApi.get('/api/v1/galeria', controlador.obtenerGaleria);

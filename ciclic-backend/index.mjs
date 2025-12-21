@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
         message: '🚀 Backend de Administración Ciclic funcionando correctamente',
         version: '1.0.0',
         endpoints: {
+            login: '/api/v1/login',
             eventos: '/api/v1/eventos',
             galeria: '/api/v1/galeria',
             uploadImage: '/api/v1/upload-image',
