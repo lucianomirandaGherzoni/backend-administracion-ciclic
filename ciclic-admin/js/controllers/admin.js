@@ -383,13 +383,30 @@ function abrirModalEvento(evento = null) {
     if (!modal || !form) return;
 
     form.reset();
-    // Ocultar todas las previews
-    document.querySelectorAll("#eventoModal .preview-imagen").forEach(el => el.style.display = "none");
     
-    // Limpiar inputs hidden
-    document.getElementById("url-portada-actual").value = "";
-    document.getElementById("url-modal-actual").value = "";
-    document.getElementById("url-mapa-actual").value = "";
+    // Limpiar y ocultar todas las previews de imágenes
+    const tiposImagen = ['portada', 'modal', 'mapa'];
+    tiposImagen.forEach(tipo => {
+        // Ocultar contenedor de preview
+        const previewContainer = document.getElementById(`preview-${tipo}-container`);
+        if (previewContainer) previewContainer.style.display = "none";
+        
+        // Limpiar la imagen de preview
+        const imgPreview = document.getElementById(`img-preview-${tipo}`);
+        if (imgPreview) imgPreview.src = "";
+        
+        // Limpiar el input hidden de URL actual
+        const urlActual = document.getElementById(`url-${tipo}-actual`);
+        if (urlActual) urlActual.value = "";
+        
+        // Limpiar el input de archivo
+        const fileInput = document.getElementById(`file-${tipo}`);
+        if (fileInput) fileInput.value = "";
+        
+        // Limpiar el texto del nombre de archivo
+        const fileName = document.getElementById(`file-name-${tipo}`);
+        if (fileName) fileName.textContent = "Ningún archivo seleccionado";
+    });
 
     if (evento) {
         titulo.textContent = "Editar Evento";
@@ -532,8 +549,22 @@ function abrirModalGaleria(item = null) {
     if (!modal || !form) return;
 
     form.reset();
-    document.getElementById("preview-galeria-container").style.display = "none";
-    document.getElementById("url-galeria-actual").value = "";
+    
+    // Limpiar y ocultar preview de galería
+    const previewContainer = document.getElementById("preview-galeria-container");
+    if (previewContainer) previewContainer.style.display = "none";
+    
+    const imgPreview = document.getElementById("img-preview-galeria");
+    if (imgPreview) imgPreview.src = "";
+    
+    const urlActual = document.getElementById("url-galeria-actual");
+    if (urlActual) urlActual.value = "";
+    
+    const fileInput = document.getElementById("file-galeria");
+    if (fileInput) fileInput.value = "";
+    
+    const fileName = document.getElementById("file-name-galeria");
+    if (fileName) fileName.textContent = "Ningún archivo seleccionado";
 
     if (item) {
         titulo.textContent = "Editar Item Galería";
