@@ -177,6 +177,8 @@ function setupListeners() {
     document.querySelectorAll(".cerrar-modal, .close").forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+            // Restaurar scroll del body
+            document.body.classList.remove('modal-open');
         };
     });
 
@@ -417,6 +419,8 @@ function abrirModalEvento(evento = null) {
     }
 
     modal.style.display = "flex";
+    // Bloquear scroll del body
+    document.body.classList.add('modal-open');
 }
 
 function mostrarImagenPrevia(tipo, url) {
@@ -505,6 +509,7 @@ async function guardarEvento(e) {
         }
 
         document.getElementById("eventoModal").style.display = "none";
+        document.body.classList.remove('modal-open');
         cargarDatos(); // Recargar tabla
 
     } catch (err) {
@@ -546,6 +551,8 @@ function abrirModalGaleria(item = null) {
     }
 
     modal.style.display = "flex";
+    // Bloquear scroll del body
+    document.body.classList.add('modal-open');
 }
 
 async function guardarGaleria(e) {
@@ -583,6 +590,7 @@ async function guardarGaleria(e) {
         }
 
         document.getElementById("galeriaModal").style.display = "none";
+        document.body.classList.remove('modal-open');
         cargarDatos();
 
     } catch (err) {
@@ -608,7 +616,11 @@ function confirmarEliminar(id, tipo) {
             : "¿Eliminar este item de la galería?";
     }
     
-    if (modal) modal.style.display = "flex";
+    if (modal) {
+        modal.style.display = "flex";
+        // Bloquear scroll del body
+        document.body.classList.add('modal-open');
+    }
 }
 
 async function ejecutarEliminacion() {
@@ -627,6 +639,7 @@ async function ejecutarEliminacion() {
 
         showToast("Eliminado correctamente");
         document.getElementById("confirmarEliminarModal").style.display = "none";
+        document.body.classList.remove('modal-open');
         cargarDatos();
 
     } catch (e) {

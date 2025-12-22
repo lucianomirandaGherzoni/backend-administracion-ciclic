@@ -3,15 +3,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.3rem;
+  border-radius: 0.5rem;
   font-weight: 500;
   height: 2.5rem;
-  padding: 0 1rem;
+  padding: 0 1.25rem;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
   font-family: 'Neue Haas', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.boton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.boton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .boton-primario {
@@ -154,13 +165,14 @@
 .grupo-formulario {
   display: grid;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 label {
   font-weight: 500;
   font-size: 0.875rem;
-  color: #374151;
+  color: #1f2937;
+  letter-spacing: -0.01em;
 }
 
 input,
@@ -168,25 +180,126 @@ textarea,
 select {
   display: block;
   width: 100%;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--borde);
-  border-radius: 0.375rem;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid var(--borde);
+  border-radius: 0.5rem;
   background-color: var(--fondo);
   color: var(--texto-principal);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9375rem;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: #9ca3af;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
   border-color: var(--primario);
-  box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.2);
+  box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.1);
+  transform: translateY(-1px);
 }
 
 textarea {
   min-height: 7.5rem;
   resize: vertical;
+}
+
+/* Mejorar el input de fecha y hora */
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"] {
+  position: relative;
+  cursor: pointer;
+  padding: 0.75rem 0.875rem;
+  font-family: 'Neue Haas', system-ui, sans-serif;
+  color-scheme: light;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: #f3f4f6;
+  opacity: 1;
+}
+
+input[type="datetime-local"]:focus::-webkit-calendar-picker-indicator,
+input[type="date"]:focus::-webkit-calendar-picker-indicator,
+input[type="time"]:focus::-webkit-calendar-picker-indicator {
+  background-color: #e5e7eb;
+}
+
+/* Mejorar el estilo del texto del input de fecha */
+input[type="datetime-local"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit {
+  padding: 0.125rem 0;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0.125rem 0;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-text {
+  color: #6b7280;
+  padding: 0 0.125rem;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit-month-field,
+input[type="datetime-local"]::-webkit-datetime-edit-day-field,
+input[type="datetime-local"]::-webkit-datetime-edit-year-field,
+input[type="datetime-local"]::-webkit-datetime-edit-hour-field,
+input[type="datetime-local"]::-webkit-datetime-edit-minute-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit-month-field:hover,
+input[type="datetime-local"]::-webkit-datetime-edit-day-field:hover,
+input[type="datetime-local"]::-webkit-datetime-edit-year-field:hover,
+input[type="datetime-local"]::-webkit-datetime-edit-hour-field:hover,
+input[type="datetime-local"]::-webkit-datetime-edit-minute-field:hover,
+input[type="date"]::-webkit-datetime-edit-month-field:hover,
+input[type="date"]::-webkit-datetime-edit-day-field:hover,
+input[type="date"]::-webkit-datetime-edit-year-field:hover {
+  background-color: #f3f4f6;
+}
+
+input[type="datetime-local"]::-webkit-datetime-edit-month-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-day-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-year-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-hour-field:focus,
+input[type="datetime-local"]::-webkit-datetime-edit-minute-field:focus,
+input[type="date"]::-webkit-datetime-edit-month-field:focus,
+input[type="date"]::-webkit-datetime-edit-day-field:focus,
+input[type="date"]::-webkit-datetime-edit-year-field:focus {
+  background-color: #e5e7eb;
+  outline: none;
+}
+
+/* Bloquear scroll del body cuando se abre un modal */
+body.modal-open {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width, 0);
 }
 
 /* Modales */
@@ -338,15 +451,17 @@ textarea {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 1rem;
+  padding: 1.125rem 1.25rem;
   background-color: #fafafa;
-  border-radius: 0.5rem;
-  border: 1px solid var(--borde);
-  transition: all 0.2s ease;
+  border-radius: 0.75rem;
+  border: 1.5px solid var(--borde);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toggle-container:hover {
-  border-color: #000;
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .toggle-switch {
@@ -371,7 +486,7 @@ textarea {
   right: 0;
   bottom: 0;
   background-color: #d1d5db;
-  transition: 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 28px;
 }
 
@@ -383,9 +498,9 @@ textarea {
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-switch input:checked + .toggle-slider {
@@ -394,6 +509,7 @@ textarea {
 
 .toggle-switch input:checked + .toggle-slider:before {
   transform: translateX(24px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-label {
@@ -436,21 +552,25 @@ textarea {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background-color: #fff;
-  transition: all 0.2s ease;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  border: 1.5px dashed #d1d5db;
+  border-radius: 0.625rem;
+  background-color: #fafafa;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .upload-area:hover {
   border-color: #9ca3af;
+  background-color: #f9fafb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .upload-area.drag-over {
   border-color: #000;
-  background-color: #f9fafb;
+  background-color: #f3f4f6;
+  border-style: solid;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .upload-area input[type="file"] {
@@ -470,20 +590,29 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
+  padding: 0.625rem 1.125rem;
+  background-color: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 0.5rem;
   font-weight: 500;
   color: #374151;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Neue Haas', system-ui, sans-serif;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .upload-text-primary:hover {
-  background-color: #e5e7eb;
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upload-text-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .upload-text-secondary {
@@ -495,12 +624,18 @@ textarea {
 }
 
 .upload-preview {
-  margin-top: 0.75rem;
+  margin-top: 0.875rem;
   position: relative;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   overflow: hidden;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: #fafafa;
+  border: 1.5px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-preview:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
 }
 
 .upload-preview img {
@@ -558,7 +693,31 @@ textarea {
   }
 
   .toggle-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 1rem;
+  }
+
+  .grupo-formulario {
+    margin-bottom: 1rem;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .upload-area {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .upload-text-secondary {
+    margin-left: 0;
+    text-align: center;
   }
 }

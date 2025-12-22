@@ -86,6 +86,7 @@ async function obtenerProximosEventos() {
         const { data, error } = await supabaseAdmin
             .from('proximos_eventos')
             .select('*')
+            .eq('activo', true) // Filtrar solo eventos activos
             .order('fecha', { ascending: true }); // Los más cercanos primero
 
         if (error) throw error;
