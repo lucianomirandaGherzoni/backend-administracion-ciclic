@@ -18,7 +18,8 @@ export const api = {
     // --- EVENTOS ---
     getEventos: async () => {
         try {
-            return await request(`${CONFIG.API_BASE_URL_EVENTOS}?_=${Date.now()}`);
+            // Usa la ruta admin para obtener todos los eventos (activos e inactivos)
+            return await request(`${CONFIG.API_BASE_URL_EVENTOS_ADMIN}?_=${Date.now()}`);
         } catch (error) {
             console.warn("API Eventos:", error);
             return [];

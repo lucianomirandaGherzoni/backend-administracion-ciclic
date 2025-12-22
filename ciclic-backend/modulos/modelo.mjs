@@ -81,6 +81,22 @@ async function eliminarItemGaleria(id) {
 
 // --- SECCIÓN: PRÓXIMOS EVENTOS ---
 
+// Obtener todos los eventos (para administración)
+async function obtenerTodosLosEventos() {
+    try {
+        const { data, error } = await supabaseAdmin
+            .from('proximos_eventos')
+            .select('*')
+            .order('fecha', { ascending: true }); // Los más cercanos primero
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+// Obtener solo eventos activos (para frontend público)
 async function obtenerProximosEventos() {
     try {
         const { data, error } = await supabaseAdmin
@@ -234,6 +250,7 @@ export default {
     modificarItemGaleria,
     eliminarItemGaleria,
     // Próximos Eventos
+    obtenerTodosLosEventos,
     obtenerProximosEventos,
     obtenerUnEvento,
     agregarEvento,

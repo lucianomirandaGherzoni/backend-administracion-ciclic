@@ -77,6 +77,17 @@ async function eliminarItemGaleria(req, res) {
 
 // --- CONTROLADORES PRÓXIMOS EVENTOS ---
 
+// Admin: obtener todos los eventos (activos e inactivos)
+async function obtenerTodosLosEventos(req, res) {
+    try {
+        const data = await modelo.obtenerTodosLosEventos();
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ mensaje: "Error al obtener eventos.", detalle: error.message });
+    }
+}
+
+// Público: obtener solo eventos activos
 async function obtenerProximosEventos(req, res) {
     try {
         const data = await modelo.obtenerProximosEventos();
@@ -185,6 +196,7 @@ export default {
     agregarItemGaleria,
     modificarItemGaleria,
     eliminarItemGaleria,
+    obtenerTodosLosEventos,
     obtenerProximosEventos,
     obtenerUnEvento,
     agregarEvento,

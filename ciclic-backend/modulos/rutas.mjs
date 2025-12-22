@@ -19,7 +19,8 @@ rutasApi.put('/api/v1/galeria/:id', controlador.modificarItemGaleria);
 rutasApi.delete('/api/v1/galeria/:id', controlador.eliminarItemGaleria);
 
 // --- Rutas Próximos Eventos ---
-rutasApi.get('/api/v1/eventos', controlador.obtenerProximosEventos);
+rutasApi.get('/api/v1/eventos-admin', controlador.obtenerTodosLosEventos); // Admin: todos los eventos
+rutasApi.get('/api/v1/eventos', controlador.obtenerProximosEventos); // Público: solo activos
 rutasApi.get('/api/v1/eventos/:id', controlador.obtenerUnEvento);
 rutasApi.post('/api/v1/eventos', controlador.agregarEvento);
 rutasApi.put('/api/v1/eventos/:id', controlador.modificarEvento);
