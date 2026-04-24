@@ -1,273 +1,489 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Ciclic - Eventos</title>
+  <title>Ciclic Admin — Dashboard</title>
+  <link rel="icon" type="image/png" href="img/ciclic-logo-3.png" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
   <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
   <link rel="stylesheet" href="css/modern.css" />
 </head>
-
 <body>
-  <header class="encabezado">
-    <div class="encabezado-nav" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-      <h2 style="margin:0;">CICLIC ADMIN</h2>
-      <button id="boton-logout-admin" class="boton boton-fantasma">
-        <i class="ti ti-logout icono-mr-2"></i> Salir
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="img/ciclic-logo-3.png" alt="Ciclic" class="sidebar-logo-img" />
+      <span class="sidebar-brand-tag">Admin Panel</span>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <nav class="sidebar-nav">
+      <p class="sidebar-nav-label">Navegacion</p>
+      <button class="sidebar-nav-item active" data-module="dashboard">
+        <i class="ti ti-layout-dashboard"></i>
+        <span>Dashboard</span>
+      </button>
+      <button class="sidebar-nav-item" data-module="eventos">
+        <i class="ti ti-calendar-event"></i>
+        <span>Eventos</span>
+        <span class="sidebar-badge" id="sidebar-badge-eventos">0</span>
+      </button>
+      <button class="sidebar-nav-item" data-module="galeria">
+        <i class="ti ti-photo"></i>
+        <span>Galeria</span>
+        <span class="sidebar-badge" id="sidebar-badge-galeria">0</span>
+      </button>
+      <div class="sidebar-divider" style="margin:0.75rem 0;"></div>
+      <p class="sidebar-nav-label">Configuracion</p>
+      <button class="sidebar-nav-item" data-module="web">
+        <i class="ti ti-world"></i>
+        <span>Gestion Web</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-user">
+        <div class="sidebar-user-avatar">
+            <img src="img/ciclic-logo-3.png" alt="Ciclic" class="sidebar-avatar-logo" />
+          </div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name">ciclic</span>
+          <span class="sidebar-user-role">Administrador</span>
+        </div>
+      </div>
+      <button id="boton-logout-admin" class="sidebar-logout-btn" title="Cerrar sesion">
+        <i class="ti ti-logout"></i>
       </button>
     </div>
-  </header>
+  </aside>
 
-  <section class="fondo-crud">
-    
-    <div id="label-status-info" class="stock-info-label">
-      Cargando métricas...
-    </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <section class="contenedor main-admin">
-      <div class="encabezado-admin">
-        <h2 class="titulo-admin">Próximos Eventos</h2>
-        <button id="boton-agregar-evento" class="boton boton-primario boton-agregar-producto">
-          <i class="ti ti-calendar-plus"></i> Nuevo Evento
-        </button>
+  <!-- MAIN CONTENT -->
+  <main class="dashboard-main">
+
+    <header class="dashboard-topbar">
+      <button class="topbar-menu-btn" id="sidebar-toggle">
+        <i class="ti ti-menu-2"></i>
+      </button>
+      <div class="topbar-left">
+        <span class="topbar-page-title" id="topbar-title">Dashboard</span>
       </div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </header>
 
-      <div class="contenedor-tabla-admin">
-        <table class="tabla-admin">
-          <thead>
-            <tr>
-              <th class="ancho-80">Portada</th>
-              <th>Evento</th>
-              <th class="col-ocultar-movil">Fecha</th>
-              <th class="texto-centro col-ocultar-movil">Estado</th>
-              <th class="texto-centro">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="cuerpo-tabla-eventos"></tbody>
-        </table>
-      </div>
-    </section>
+    <div class="dashboard-content">
 
-    <div id="label-galeria-info" class="stock-info-label">
-      Cargando métricas...
-    </div>
-
-    <section class="contenedor main-admin">
-      <div class="encabezado-admin">
-        <h2 class="titulo-admin">Galería (Eventos Pasados)</h2>
-        <button id="boton-agregar-galeria" class="boton boton-primario boton-agregar-producto">
-          <i class="ti ti-photo-plus"></i> Nuevo Item
-        </button>
-      </div>
-
-      <div class="contenedor-tabla-admin">
-        <table class="tabla-admin">
-          <thead>
-            <tr>
-              <th class="ancho-80">Foto</th>
-              <th>Título / DJ</th>
-              <th class="col-ocultar-movil">Fecha</th>
-              <th class="col-ocultar-movil">Drive Link</th>
-              <th class="texto-centro">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="cuerpo-tabla-galeria"></tbody>
-        </table>
-      </div>
-    </section>
-  </section>
-
-  <div id="eventoModal" class="modal">
-    <div class="modal-contenido modal-contenido-grande">
-      <div class="modal-encabezado">
-        <h2 id="modalTituloEvento" class="modal-titulo">Gestionar Evento</h2>
-        <button class="boton-cerrar cerrar-modal">&times;</button>
-      </div>
-      <div class="modal-cuerpo">
-        <form id="formulario-crud-evento" class="formulario-modal">
-          <input type="hidden" id="id-evento" />
-          
-          <div class="grupo-formulario">
-            <label>Título del Evento</label>
-            <input type="text" id="titulo-evento" required placeholder="Ej: AÑO NUEVO 2025" />
-          </div>
-
-          <div class="grupo-formulario">
-            <label>Fecha y Hora</label>
-            <input type="datetime-local" id="fecha-evento" required />
-          </div>
-
-          <div class="grupo-formulario">
-            <label>Descripción</label>
-            <textarea id="desc-evento" placeholder="Detalles del evento..."></textarea>
-          </div>
-
-          <div class="grupo-formulario" style="border-top:1px solid #eee; padding-top:10px;">
-            <label>1. Imagen Portada (Card Principal)</label>
-            <div class="upload-area" id="upload-portada">
-              <input type="file" id="file-portada" accept="image/*" />
-              <input type="hidden" id="url-portada-actual" />
-              <label for="file-portada" class="upload-text-primary">
-                Seleccionar archivo
-              </label>
-              <span class="upload-text-secondary" id="file-name-portada">Ningún archivo seleccionado</span>
-            </div>
-            <div id="preview-portada-container" class="upload-preview" style="display:none;">
-              <img id="img-preview-portada" src="">
-              <div class="upload-preview-actions">
-                <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="portada">
-                  Quitar
-                </button>
-              </div>
+      <!-- MODULE: DASHBOARD -->
+      <section id="module-dashboard" class="module module-active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-icon icon-dark"><i class="ti ti-calendar"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-card-label">Proximos Eventos</span>
+              <span class="stat-card-value" id="stat-val-total">--</span>
             </div>
           </div>
-
-          <div class="grupo-formulario">
-            <label>2. Imagen Modal (Flyer completo)</label>
-            <div class="upload-area" id="upload-modal">
-              <input type="file" id="file-modal" accept="image/*" />
-              <input type="hidden" id="url-modal-actual" />
-              <label for="file-modal" class="upload-text-primary">
-                Seleccionar archivo
-              </label>
-              <span class="upload-text-secondary" id="file-name-modal">Ningún archivo seleccionado</span>
-            </div>
-            <div id="preview-modal-container" class="upload-preview" style="display:none;">
-              <img id="img-preview-modal" src="">
-              <div class="upload-preview-actions">
-                <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="modal">
-                  Quitar
-                </button>
-              </div>
+          <div class="stat-card">
+            <div class="stat-card-icon icon-dark"><i class="ti ti-eye"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-card-label">Eventos Activos</span>
+              <span class="stat-card-value" id="stat-val-activos">--</span>
             </div>
           </div>
-
-          <div class="grupo-formulario">
-            <label>3. Imagen Mapa Mesas (Opcional)</label>
-            <div class="upload-area" id="upload-mapa">
-              <input type="file" id="file-mapa" accept="image/*" />
-              <input type="hidden" id="url-mapa-actual" />
-              <label for="file-mapa" class="upload-text-primary">
-                Seleccionar archivo
-              </label>
-              <span class="upload-text-secondary" id="file-name-mapa">Ningún archivo seleccionado</span>
-            </div>
-            <div id="preview-mapa-container" class="upload-preview" style="display:none;">
-              <img id="img-preview-mapa" src="">
-              <div class="upload-preview-actions">
-                <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="mapa">
-                  Quitar
-                </button>
-              </div>
+          <div class="stat-card">
+            <div class="stat-card-icon icon-dark"><i class="ti ti-photo"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-card-label">Items en Galeria</span>
+              <span class="stat-card-value" id="stat-val-galeria">--</span>
             </div>
           </div>
-
-          <div class="grupo-formulario" style="border-top:1px solid #eee; padding-top:10px;">
-            <label>Iframe Google Maps (Src)</label>
-            <input type="text" id="iframe-evento" placeholder="Pegar solo la URL del src o el tag iframe completo" />
-          </div>
-
-          <div class="grupo-formulario">
-            <label>Estado del Evento</label>
-            <div class="toggle-container">
-              <label class="toggle-switch">
-                <input type="checkbox" id="activo-evento" checked>
-                <span class="toggle-slider"></span>
-              </label>
-              <div class="toggle-label">
-                <span id="toggle-text">Evento Activo</span>
-                <span id="toggle-status" class="toggle-status activo">VISIBLE</span>
-              </div>
+          <div class="stat-card">
+            <div class="stat-card-icon icon-dark"><i class="ti ti-clock"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-card-label">Proximo Evento</span>
+              <span class="stat-card-value stat-val-sm" id="stat-val-proximo">--</span>
             </div>
           </div>
+        </div>
 
-          <div class="modal-pie">
-            <button id="btnGuardarEvento" type="submit" class="boton boton-primario">
-              <span id="txt-guardar-evento">Guardar Evento</span>
-              <span id="spinner-evento" class="spinner" style="display: none;"></span>
+        <div class="dashboard-widgets-grid">
+          <div class="widget-card">
+            <div class="widget-card-header">
+              <div class="widget-card-title"><i class="ti ti-calendar-event"></i> Proximos Eventos</div>
+              <button class="widget-link-btn" data-goto="eventos">Ver todos <i class="ti ti-arrow-right"></i></button>
+            </div>
+            <div id="widget-eventos-list" class="widget-list">
+              <div class="widget-skeleton"></div>
+              <div class="widget-skeleton"></div>
+              <div class="widget-skeleton"></div>
+            </div>
+          </div>
+          <div class="widget-card">
+            <div class="widget-card-header">
+              <div class="widget-card-title"><i class="ti ti-photo"></i> Galeria Reciente</div>
+              <button class="widget-link-btn" data-goto="galeria">Ver todos <i class="ti ti-arrow-right"></i></button>
+            </div>
+            <div id="widget-galeria-list" class="widget-list">
+              <div class="widget-skeleton"></div>
+              <div class="widget-skeleton"></div>
+              <div class="widget-skeleton"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODULE: EVENTOS -->
+      <section id="module-eventos" class="module">
+        <div id="label-status-info" class="module-metric-badge">
+          <span class="status-dot"></span> Cargando metricas...
+        </div>
+        <div class="module-card">
+          <div class="module-card-header">
+            <div>
+              <h2 class="module-card-title">Proximos Eventos</h2>
+              <p class="module-card-subtitle">Eventos configurados y visibles en la landing</p>
+            </div>
+            <button id="boton-agregar-evento" class="boton boton-primario">
+              <i class="ti ti-calendar-plus"></i> Nuevo Evento
             </button>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
+          <div class="contenedor-tabla-admin">
+            <table class="tabla-admin">
+              <thead>
+                <tr>
+                  <th class="ancho-80">Portada</th>
+                  <th>Evento</th>
+                  <th class="col-ocultar-movil">Fecha</th>
+                  <th class="texto-centro col-ocultar-movil">Estado</th>
+                  <th class="texto-centro">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="cuerpo-tabla-eventos"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-  <div id="galeriaModal" class="modal">
-    <div class="modal-contenido">
-      <div class="modal-encabezado">
-        <h2 id="modalTituloGaleria" class="modal-titulo">Item Galería</h2>
-        <button class="boton-cerrar cerrar-modal">&times;</button>
-      </div>
-      <div class="modal-cuerpo">
-        <form id="formulario-crud-galeria" class="formulario-modal">
-          <input type="hidden" id="id-galeria" />
-          
-          <div class="grupo-formulario">
-            <label>Título (Nombre DJ/Fiesta)</label>
-            <input type="text" id="titulo-galeria" required />
-          </div>
-          <div class="grupo-formulario">
-            <label>Fecha del Evento</label>
-            <input type="date" id="fecha-galeria" required />
-          </div>
-          <div class="grupo-formulario">
-            <label>Link Google Drive</label>
-            <input type="url" id="link-galeria" placeholder="https://drive.google.com..." />
-          </div>
-
-          <div class="grupo-formulario">
-            <label>Imagen (Cuadrada/Vertical)</label>
-            <div class="upload-area" id="upload-galeria">
-              <input type="file" id="file-galeria" accept="image/*" />
-              <input type="hidden" id="url-galeria-actual" />
-              <label for="file-galeria" class="upload-text-primary">
-                Seleccionar archivo
-              </label>
-              <span class="upload-text-secondary" id="file-name-galeria">Ningún archivo seleccionado</span>
+      <!-- MODULE: GALERIA -->
+      <section id="module-galeria" class="module">
+        <div id="label-galeria-info" class="module-metric-badge">
+          <span class="status-dot" style="background:#9ca3af;"></span> Cargando metricas...
+        </div>
+        <div class="module-card">
+          <div class="module-card-header">
+            <div>
+              <h2 class="module-card-title">Galeria de Eventos</h2>
+              <p class="module-card-subtitle">Registro fotografico de eventos pasados</p>
             </div>
-            <div id="preview-galeria-container" class="upload-preview" style="display:none;">
-              <img id="img-preview-galeria" src="">
-              <div class="upload-preview-actions">
-                <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="galeria">
-                  Quitar
+            <button id="boton-agregar-galeria" class="boton boton-primario">
+              <i class="ti ti-photo-plus"></i> Nuevo Item
+            </button>
+          </div>
+          <div class="contenedor-tabla-admin">
+            <table class="tabla-admin">
+              <thead>
+                <tr>
+                  <th class="ancho-80">Foto</th>
+                  <th>Titulo / DJ</th>
+                  <th class="col-ocultar-movil">Fecha</th>
+                  <th class="col-ocultar-movil">Drive Link</th>
+                  <th class="texto-centro">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="cuerpo-tabla-galeria"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODULE: GESTION WEB -->
+      <section id="module-web" class="module">
+        <div class="module-card">
+          <div class="module-card-header">
+            <div>
+              <h2 class="module-card-title">Multimedia del Sitio</h2>
+              <p class="module-card-subtitle">Actualizá las imágenes y videos principales de la landing page</p>
+            </div>
+          </div>
+          <div class="web-config-grid">
+
+            <!-- Portada -->
+            <div class="web-config-card">
+              <div class="web-config-card-top">
+                <div class="web-config-card-icon icon-green"><i class="ti ti-photo-video"></i></div>
+                <div>
+                  <h3 class="web-config-card-title">Imagen Portada</h3>
+                  <p class="web-config-card-desc">Imagen o video de fondo del sitio</p>
+                </div>
+              </div>
+              <div class="web-config-preview-wrap" id="wrap-preview-hero">
+                <div class="web-config-preview-empty">
+                  <i class="ti ti-photo-off"></i>
+                  <span>Sin archivo</span>
+                </div>
+              </div>
+              <div class="upload-area" id="upload-hero-web">
+                <input type="file" id="file-hero-web" accept="image/*,video/*" />
+                <label for="file-hero-web" class="upload-text-primary">
+                  <i class="ti ti-cloud-upload"></i> Imagen o video
+                </label>
+                <span class="upload-text-secondary" id="file-name-hero-web">Ningún archivo seleccionado</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+                <button class="boton boton-primario" style="flex:1;" id="btn-guardar-hero" disabled>
+                  <span id="txt-guardar-hero">Guardar Portada</span>
+                  <span id="spinner-hero" class="spinner" style="display:none;"></span>
+                </button>
+                <button class="boton boton-contorno boton-icono" id="btn-quitar-hero" title="Quitar" style="display:none;">
+                  <i class="ti ti-trash"></i>
                 </button>
               </div>
             </div>
+
+            <!-- Tickets banner -->
+            <div class="web-config-card">
+              <div class="web-config-card-top">
+                <div class="web-config-card-icon icon-blue"><i class="ti ti-ticket"></i></div>
+                <div>
+                  <h3 class="web-config-card-title">Banner Temporada</h3>
+                  <p class="web-config-card-desc">Imagen de fondo de la sección de próximos eventos</p>
+                </div>
+              </div>
+              <div class="web-config-preview-wrap" id="wrap-preview-tickets">
+                <div class="web-config-preview-empty">
+                  <i class="ti ti-photo-off"></i>
+                  <span>Sin imagen</span>
+                </div>
+              </div>
+              <div class="upload-area" id="upload-tickets-web">
+                <input type="file" id="file-tickets-web" accept="image/*" />
+                <label for="file-tickets-web" class="upload-text-primary">
+                  <i class="ti ti-cloud-upload"></i> Seleccionar imagen
+                </label>
+                <span class="upload-text-secondary" id="file-name-tickets-web">Ningun archivo seleccionado</span>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+                <button class="boton boton-primario" style="flex:1;" id="btn-guardar-tickets" disabled>
+                  <span id="txt-guardar-tickets">Guardar Banner</span>
+                  <span id="spinner-tickets" class="spinner" style="display:none;"></span>
+                </button>
+                <button class="boton boton-contorno boton-icono" id="btn-quitar-tickets" title="Quitar" style="display:none;">
+                  <i class="ti ti-trash"></i>
+                </button>
+              </div>
+            </div>
+
           </div>
-          
-          <div class="modal-pie">
-            <button id="btnGuardarGaleria" type="submit" class="boton boton-primario">
-              <span id="txt-guardar-galeria">Guardar</span>
-              <span id="spinner-galeria" class="spinner" style="display: none;"></span>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="module-card" style="margin-top:1.5rem;">
+          <div class="module-card-header">
+            <div>
+              <h2 class="module-card-title">Redes Sociales</h2>
+              <p class="module-card-subtitle">Links de las redes visibles en el sitio</p>
+            </div>
+          </div>
+          <div class="redes-config-grid">
+            <div class="grupo-formulario">
+              <label><i class="ti ti-brand-instagram" style="margin-right:6px;"></i>Instagram</label>
+              <input type="url" id="config-instagram" placeholder="https://instagram.com/ciclic" />
+            </div>
+            <div class="grupo-formulario">
+              <label><i class="ti ti-brand-spotify" style="margin-right:6px;"></i>Spotify</label>
+              <input type="url" id="config-spotify" placeholder="https://open.spotify.com/..." />
+            </div>
+            <div class="grupo-formulario">
+              <label><i class="ti ti-brand-soundcloud" style="margin-right:6px;"></i>SoundCloud</label>
+              <input type="url" id="config-soundcloud" placeholder="https://soundcloud.com/..." />
+            </div>
+            <div class="grupo-formulario">
+              <label><i class="ti ti-brand-whatsapp" style="margin-right:6px;"></i>WhatsApp / Contacto</label>
+              <input type="url" id="config-whatsapp" placeholder="https://wa.me/..." />
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:0.25rem;">
+            <button class="boton boton-primario" id="btn-guardar-redes">
+              <i class="ti ti-device-floppy"></i> Guardar Redes
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL EVENTO -->
+<div id="eventoModal" class="modal">
+  <div class="modal-contenido modal-contenido-grande">
+    <div class="modal-encabezado">
+      <h2 id="modalTituloEvento" class="modal-titulo">Gestionar Evento</h2>
+      <button class="boton-cerrar cerrar-modal">&times;</button>
+    </div>
+    <div class="modal-cuerpo">
+      <form id="formulario-crud-evento" class="formulario-modal">
+        <input type="hidden" id="id-evento" />
+        <div class="grupo-formulario">
+          <label>Titulo del Evento</label>
+          <input type="text" id="titulo-evento" required placeholder="Ej: ANNO NUEVO 2025" />
+        </div>
+        <div class="grupo-formulario">
+          <label>Fecha y Hora</label>
+          <input type="datetime-local" id="fecha-evento" required />
+        </div>
+        <div class="grupo-formulario">
+          <label>Descripcion</label>
+          <textarea id="desc-evento" placeholder="Detalles del evento..."></textarea>
+        </div>
+        <div class="grupo-formulario" style="border-top:1px solid #f0f0f0;padding-top:1rem;">
+          <label>1. Imagen Portada (Card Principal)</label>
+          <div class="upload-area" id="upload-portada">
+            <input type="file" id="file-portada" accept="image/*" />
+            <input type="hidden" id="url-portada-actual" />
+            <label for="file-portada" class="upload-text-primary">Seleccionar archivo</label>
+            <span class="upload-text-secondary" id="file-name-portada">Ningun archivo seleccionado</span>
+          </div>
+          <div id="preview-portada-container" class="upload-preview" style="display:none;">
+            <img id="img-preview-portada" src="">
+            <div class="upload-preview-actions">
+              <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="portada">Quitar</button>
+            </div>
+          </div>
+        </div>
+        <div class="grupo-formulario">
+          <label>2. Imagen Modal (Flyer completo)</label>
+          <div class="upload-area" id="upload-modal">
+            <input type="file" id="file-modal" accept="image/*" />
+            <input type="hidden" id="url-modal-actual" />
+            <label for="file-modal" class="upload-text-primary">Seleccionar archivo</label>
+            <span class="upload-text-secondary" id="file-name-modal">Ningun archivo seleccionado</span>
+          </div>
+          <div id="preview-modal-container" class="upload-preview" style="display:none;">
+            <img id="img-preview-modal" src="">
+            <div class="upload-preview-actions">
+              <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="modal">Quitar</button>
+            </div>
+          </div>
+        </div>
+        <div class="grupo-formulario">
+          <label>3. Imagen Mapa Mesas (Opcional)</label>
+          <div class="upload-area" id="upload-mapa">
+            <input type="file" id="file-mapa" accept="image/*" />
+            <input type="hidden" id="url-mapa-actual" />
+            <label for="file-mapa" class="upload-text-primary">Seleccionar archivo</label>
+            <span class="upload-text-secondary" id="file-name-mapa">Ningun archivo seleccionado</span>
+          </div>
+          <div id="preview-mapa-container" class="upload-preview" style="display:none;">
+            <img id="img-preview-mapa" src="">
+            <div class="upload-preview-actions">
+              <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="mapa">Quitar</button>
+            </div>
+          </div>
+        </div>
+        <div class="grupo-formulario" style="border-top:1px solid #f0f0f0;padding-top:1rem;">
+          <label>Iframe Google Maps (Src)</label>
+          <input type="text" id="iframe-evento" placeholder="Pegar solo la URL del src o el tag iframe completo" />
+        </div>
+        <div class="grupo-formulario">
+          <label>Estado del Evento</label>
+          <div class="toggle-container">
+            <label class="toggle-switch">
+              <input type="checkbox" id="activo-evento" checked>
+              <span class="toggle-slider"></span>
+            </label>
+            <div class="toggle-label">
+              <span id="toggle-text">Evento Activo</span>
+              <span id="toggle-status" class="toggle-status activo">VISIBLE</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-pie">
+          <button id="btnGuardarEvento" type="submit" class="boton boton-primario">
+            <span id="txt-guardar-evento">Guardar Evento</span>
+            <span id="spinner-evento" class="spinner" style="display:none;"></span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
-  <div id="confirmarEliminarModal" class="modal">
-    <div class="modal-contenido modal-contenido-pequeno">
-      <div class="modal-encabezado">
-        <h3 class="modal-titulo">Confirmar</h3>
-        <button class="boton-cerrar cerrar-modal">&times;</button>
-      </div>
-      <div class="modal-cuerpo">
-        <p id="mensajeEliminar">¿Eliminar este registro?</p>
-        <p style="font-size:0.8rem; color:red;">Se eliminarán también las imágenes asociadas.</p>
-      </div>
-      <div class="modal-pie">
-        <button id="btnEliminar" class="boton boton-destructivo">Si, Eliminar</button>
-        <button class="boton boton-contorno cerrar-modal">Cancelar</button>
-      </div>
+<!-- MODAL GALERIA -->
+<div id="galeriaModal" class="modal">
+  <div class="modal-contenido">
+    <div class="modal-encabezado">
+      <h2 id="modalTituloGaleria" class="modal-titulo">Item Galeria</h2>
+      <button class="boton-cerrar cerrar-modal">&times;</button>
+    </div>
+    <div class="modal-cuerpo">
+      <form id="formulario-crud-galeria" class="formulario-modal">
+        <input type="hidden" id="id-galeria" />
+        <div class="grupo-formulario">
+          <label>Titulo (Nombre DJ/Fiesta)</label>
+          <input type="text" id="titulo-galeria" required />
+        </div>
+        <div class="grupo-formulario">
+          <label>Fecha del Evento</label>
+          <input type="date" id="fecha-galeria" required />
+        </div>
+        <div class="grupo-formulario">
+          <label>Link Google Drive</label>
+          <input type="url" id="link-galeria" placeholder="https://drive.google.com..." />
+        </div>
+        <div class="grupo-formulario">
+          <label>Imagen (Cuadrada/Vertical)</label>
+          <div class="upload-area" id="upload-galeria">
+            <input type="file" id="file-galeria" accept="image/*" />
+            <input type="hidden" id="url-galeria-actual" />
+            <label for="file-galeria" class="upload-text-primary">Seleccionar archivo</label>
+            <span class="upload-text-secondary" id="file-name-galeria">Ningun archivo seleccionado</span>
+          </div>
+          <div id="preview-galeria-container" class="upload-preview" style="display:none;">
+            <img id="img-preview-galeria" src="">
+            <div class="upload-preview-actions">
+              <button type="button" class="btn-preview-remove btn-borrar-img-manual" data-target="galeria">Quitar</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-pie">
+          <button id="btnGuardarGaleria" type="submit" class="boton boton-primario">
+            <span id="txt-guardar-galeria">Guardar</span>
+            <span id="spinner-galeria" class="spinner" style="display:none;"></span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
+</div>
 
-  <div id="contenedor-notificaciones" class="contenedor-notificaciones"></div>
-  <script type="module" src="js/controllers/admin.js"></script>
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div id="confirmarEliminarModal" class="modal">
+  <div class="modal-contenido modal-contenido-pequeno">
+    <div class="modal-encabezado">
+      <h3 class="modal-titulo">Confirmar eliminacion</h3>
+      <button class="boton-cerrar cerrar-modal">&times;</button>
+    </div>
+    <div class="modal-cuerpo">
+      <p id="mensajeEliminar">Eliminar este registro?</p>
+      <p style="font-size:0.8rem;color:#ef4444;">Se eliminaran tambien las imagenes asociadas.</p>
+    </div>
+    <div class="modal-pie">
+      <button id="btnEliminar" class="boton boton-destructivo">Si, eliminar</button>
+      <button class="boton boton-contorno cerrar-modal">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="contenedor-notificaciones" class="contenedor-notificaciones"></div>
+<script type="module" src="js/controllers/admin.js"></script>
 </body>
 </html>

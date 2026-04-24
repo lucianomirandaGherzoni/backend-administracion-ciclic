@@ -1,19 +1,358 @@
-/* --- css/admin.css --- */
+﻿/* --- css/admin.css --- */
 
 /* 1. Layout Principal - Fondo NEGRO */
 .fondo-crud {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
+  background:
+    linear-gradient(170deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.82) 100%),
     url('../img/fondo-ciclic-admin.jpg');
   background-size: cover;
   background-position: center;
+  background-attachment: fixed;
   min-height: 100dvh;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   text-align: center;
-  gap: 2rem;
-  padding: 120px 1rem 4rem 1rem;
+  gap: 1.5rem;
+  padding: 110px 1rem 4rem 1rem;
+}
+
+/* 2. Tarjetas - Fondo BLANCO */
+.main-admin {
+  background-color: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  margin-bottom: 0;
+  color: var(--texto-principal);
+  width: 100%;
+  max-width: 1000px;
+}
+
+.encabezado-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.titulo-admin {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--primario);
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+.boton-agregar-producto {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 3. Label de Stock - Fondo BLANCO */
+.stock-info-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 100px;
+  padding: 0.5rem 1.5rem 0.5rem 0.875rem;
+  margin: 0 auto 0 auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.875rem;
+  color: var(--texto-secundario);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: ripple 2s infinite cubic-bezier(0, 0.2, 0.8, 1);
+  z-index: -1;
+}
+
+/* Estados */
+.stock-info-label.ok .status-dot {
+  background-color: #10b981;
+}
+
+.stock-info-label.ok .status-dot::after {
+  background-color: #10b981;
+}
+
+.stock-info-label.ok {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.stock-info-label.alerta {
+  border-color: #fecaca;
+  background-color: #fff1f2;
+}
+
+.stock-info-label.alerta .status-dot {
+  background-color: #ef4444;
+}
+
+.stock-info-label.alerta .status-dot::after {
+  background-color: #ef4444;
+}
+
+.stock-info-label.alerta strong {
+  color: #b91c1c;
+}
+
+.status-divider {
+  width: 1px;
+  height: 24px;
+  background-color: #e5e7eb;
+}
+
+.status-metric {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.status-metric strong {
+  color: var(--primario);
+  font-weight: 600;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* 4. Notificaciones de Alerta (Detalle) */
+.alerta-container {
+  max-width: 600px;
+  margin: -1rem auto 2rem auto;
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(254, 242, 242, 0.95);
+  border: 1px solid #fecaca;
+  border-radius: 1rem;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.6;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.tag-alerta {
+  display: inline-block;
+  background-color: #fff;
+  border: 1px solid #fca5a5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 0 4px;
+  font-size: 0.75rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 5. Tablas */
+.contenedor-tabla-admin {
+  overflow-x: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 0.875rem;
+  background-color: #fff;
+}
+
+.tabla-admin {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-admin th,
+.tabla-admin td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #f5f5f5;
+  color: var(--texto-principal);
+}
+
+.tabla-admin thead th {
+  background-color: #fafafa;
+  color: #9ca3af;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.tabla-admin tbody tr {
+  transition: background-color 0.15s;
+}
+
+.tabla-admin tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.tabla-admin tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-admin td img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid #f0f0f0;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* 6. Upload Imagen */
+.preview-imagen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px dashed var(--borde);
+  border-radius: 1rem;
+  background-color: #f9f9f8;
+  margin-top: 0.5rem;
+}
+
+/* 7. Encabezado Admin (header) */
+.encabezado {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(12px);
+}
+
+.encabezado-nav h2 {
+  color: #fff !important;
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+.encabezado-nav .admin-brand-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+  animation: ripple-dot 2.5s infinite;
+}
+
+@keyframes ripple-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+#boton-logout-admin {
+  color: rgba(255, 255, 255, 0.55) !important;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: color 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.5rem !important;
+  padding: 0 1rem !important;
+}
+
+#boton-logout-admin:hover {
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 8. Responsive */
+@media (min-width: 640px) {
+  .encabezado-admin {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-ocultar-movil {
+    display: none;
+  }
+
+  .stock-info-label {
+    flex-direction: column;
+    border-radius: 1rem;
+    padding: 1rem;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .status-divider {
+    display: none;
+  }
+
+  .tabla-admin th,
+  .tabla-admin td {
+    padding: 0.75rem 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .contenedor-tabla-admin {
+    border: none;
+    border-radius: 0;
+  }
+
+  .main-admin {
+    border-radius: 1rem;
+  }
 }
 
 /* 2. Tarjetas - Fondo BLANCO */
@@ -65,7 +404,7 @@
   padding: 0.5rem 1.5rem 0.5rem 0.75rem;
   margin: 0 auto 1rem auto;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-  font-family: 'Neue Haas', system-ui, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.875rem;
   color: var(--texto-secundario);
   transition: all 0.3s ease;
@@ -161,7 +500,7 @@
   border-radius: 1rem;
   color: #b91c1c;
   font-size: 0.85rem;
-  font-family: 'Neue Haas', system-ui, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   line-height: 1.6;
   text-align: center;
   animation: fadeIn 0.5s ease-in-out;
@@ -215,7 +554,7 @@
 .tabla-admin thead th {
   background-color: #fafafa;
   color: #6b7280;
-  font-family: 'Neue Haas', system-ui, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   text-transform: uppercase;
   font-size: 0.6875rem;
   letter-spacing: 0.05em;

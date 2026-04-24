@@ -1,4 +1,4 @@
-/* --- css/main.css --- */
+﻿/* --- css/main.css --- */
 
 /* 1. Light (Peso 300) */
 @font-face {
@@ -77,7 +77,7 @@ html {
 
 body {
     /* Cambio: Ponemos 'Neue Haas' primero */
-    font-family: 'Neue Haas', system-ui, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     background-color: var(--fondo);
     color: var(--texto-principal);
     margin: 0;
@@ -92,12 +92,12 @@ a {
 
 /* Utilidades de Texto */
 .Letra-01 {
-    font-family: 'Neue Haas', 'Inter', system-ui, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 400;
 }
 
 .Letra-02 {
-    font-family: 'Neue Haas', 'Inter', system-ui, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 400;
 }
 

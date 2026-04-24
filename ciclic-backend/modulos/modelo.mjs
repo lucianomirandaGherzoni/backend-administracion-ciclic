@@ -242,6 +242,37 @@ async function eliminarImagenStorage(imageUrl) {
     }
 }
 
+// --- SECCIÓN: CONFIG WEB ---
+
+async function obtenerConfigWeb() {
+    try {
+        const { data, error } = await supabaseAdmin
+            .from('config_web')
+            .select('*')
+            .eq('id', 1)
+            .single();
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function guardarConfigWeb(campos) {
+    try {
+        const { data, error } = await supabaseAdmin
+            .from('config_web')
+            .update(campos)
+            .eq('id', 1)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export default {
     // Galería
     obtenerGaleria,
@@ -258,5 +289,8 @@ export default {
     eliminarEvento,
     // Storage
     subirImagenStorage,
-    eliminarImagenStorage
+    eliminarImagenStorage,
+    // Config Web
+    obtenerConfigWeb,
+    guardarConfigWeb
 };

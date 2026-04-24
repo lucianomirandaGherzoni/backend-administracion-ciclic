@@ -66,5 +66,20 @@ export const api = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ imageUrl })
         });
-    }
+    },
+
+    // --- CONFIG WEB ---
+    getConfigWeb: async () => {
+        try {
+            return await request(`${CONFIG.API_CONFIG_WEB}?_=${Date.now()}`);
+        } catch (error) {
+            console.warn('API ConfigWeb:', error);
+            return {};
+        }
+    },
+    saveConfigWeb: (campos) => request(CONFIG.API_CONFIG_WEB, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(campos)
+    })
 };

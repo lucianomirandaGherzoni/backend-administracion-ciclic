@@ -3,21 +3,116 @@ import { api } from '../services/api.js';
 import { showToast, storage } from '../utils.js';
 
 let itemAEliminar = null;
-let tipoEntidad = null; // 'evento' o 'galeria'
+let tipoEntidad = null;
+
+// Cache de datos para el dashboard
+let _cachEventos = [];
+let _cachGaleria = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // --- 1. SEGURIDAD: Verificar si el admin está logueado ---
+    // --- 1. SEGURIDAD ---
     if (!storage.isAdminLoggedIn()) {
         window.location.href = "index.html";
         return;
     }
 
-    // --- 2. CARGA INICIAL ---
+    // --- 2. SETUP UI ---
+    setupModuleNavigation();
+    setupSidebarMobile();
+
+    // --- 3. CARGA INICIAL ---
     await cargarDatos();
     setupListeners();
+    setupGestionWeb();
+    cargarConfigWeb();
 });
 
-// --- FUNCIONES DE CARGA DE DATOS ---
+// ============================================================
+//  NAVEGACIÓN DE MÓDULOS
+// ============================================================
+
+const MODULE_TITLES = {
+    dashboard: 'Dashboard',
+    eventos: 'Eventos',
+    galeria: 'Galería',
+    web: 'Gestión Web'
+};
+
+function setupModuleNavigation() {
+    const navItems = document.querySelectorAll('.sidebar-nav-item[data-module]');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            switchModule(item.dataset.module);
+        });
+    });
+
+    // Botones "Ver todos" del dashboard
+    document.querySelectorAll('.widget-link-btn[data-goto]').forEach(btn => {
+        btn.addEventListener('click', () => switchModule(btn.dataset.goto));
+    });
+}
+
+function switchModule(moduleName) {
+    // Ocultar todos los módulos
+    document.querySelectorAll('.module').forEach(m => {
+        m.classList.remove('module-active');
+    });
+
+    // Activar módulo destino
+    const target = document.getElementById(`module-${moduleName}`);
+    if (target) target.classList.add('module-active');
+
+    // Actualizar nav
+    document.querySelectorAll('.sidebar-nav-item[data-module]').forEach(item => {
+        item.classList.toggle('active', item.dataset.module === moduleName);
+    });
+
+    // Actualizar título del topbar
+    const titleEl = document.getElementById('topbar-title');
+    if (titleEl) titleEl.textContent = MODULE_TITLES[moduleName] || moduleName;
+
+    // Scroll al inicio del contenido
+    const content = document.querySelector('.dashboard-content');
+    if (content) content.scrollTop = 0;
+}
+
+// ============================================================
+//  SIDEBAR MOBILE
+// ============================================================
+
+function setupSidebarMobile() {
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('sidebar-overlay');
+
+    if (!toggleBtn || !sidebar || !overlay) return;
+
+    function openSidebar() {
+        sidebar.classList.add('sidebar-open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('sidebar-open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    toggleBtn.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // Cerrar al navegar (mobile)
+    document.querySelectorAll('.sidebar-nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 768) closeSidebar();
+        });
+    });
+}
+
+// ============================================================
+//  FUNCIONES DE CARGA DE DATOS
+// ============================================================
 
 async function cargarDatos() {
     const cuerpoEventos = document.getElementById("cuerpo-tabla-eventos");
@@ -40,29 +135,31 @@ async function cargarDatos() {
                     });
                     
                     const estado = e.activo 
-                        ? '<span class="tag-alerta" style="border-color:#10b981; color:#065f46; background-color:#d1fae5;">Activo</span>' 
-                        : '<span class="tag-alerta" style="border-color:#e5e7eb; color:#374151; background-color:#f3f4f6;">Oculto</span>';
+                        ? '<span class="widget-item-badge badge-activo">Activo</span>' 
+                        : '<span class="widget-item-badge badge-inactivo">Oculto</span>';
                     
                     const imagenMostrada = e.imagen_portada || 'https://via.placeholder.com/50?text=No+Img';
 
                     return `
                     <tr>
                         <td>
-                            <img src="${imagenMostrada}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #eee;">
+                            <img src="${imagenMostrada}" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid #f0f0f0;">
                         </td>
                         <td style="font-weight:600;">${e.titulo}</td>
                         <td class="col-ocultar-movil">${fechaFmt}</td>
                         <td class="texto-centro col-ocultar-movil">${estado}</td>
                         <td class="texto-centro">
                             <div class="acciones">
-                                <button class="boton boton-icono boton-contorno btn-edit-evt" data-id="${e.id}" title="Editar">✏️</button>
-                                <button class="boton boton-icono boton-destructivo btn-del-evt" data-id="${e.id}" title="Eliminar">🗑️</button>
+                                <button class="boton boton-icono boton-contorno btn-edit-evt" data-id="${e.id}" title="Editar"><i class="ti ti-pencil"></i></button>
+                                <button class="boton boton-icono boton-destructivo btn-del-evt" data-id="${e.id}" title="Eliminar"><i class="ti ti-trash"></i></button>
                             </div>
                         </td>
                     </tr>`;
                 }).join("");
                 
+                _cachEventos = eventos;
                 actualizarMetricas(eventos);
+                actualizarDashboard();
             }
         } catch (e) {
             console.error(e);
@@ -80,13 +177,13 @@ async function cargarDatos() {
                 cuerpoGaleria.innerHTML = "<tr><td colspan='5' class='texto-centro'>La galería está vacía</td></tr>";
             } else {
                 cuerpoGaleria.innerHTML = galeria.map(g => {
-                    const fechaFmt = new Date(g.fecha).toLocaleDateString('es-AR', {timeZone: 'UTC'}); // Usar UTC para fechas puras
+                    const fechaFmt = new Date(g.fecha).toLocaleDateString('es-AR', {timeZone: 'UTC'});
                     const imagenMostrada = g.imagen || 'https://via.placeholder.com/50?text=No+Img';
 
                     return `
                     <tr>
                         <td>
-                            <img src="${imagenMostrada}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #eee;">
+                            <img src="${imagenMostrada}" style="width:44px; height:44px; object-fit:cover; border-radius:6px; border:1px solid #f0f0f0;">
                         </td>
                         <td style="font-weight:600;">${g.titulo}</td>
                         <td class="col-ocultar-movil">${fechaFmt}</td>
@@ -95,13 +192,15 @@ async function cargarDatos() {
                         </td>
                         <td class="texto-centro">
                             <div class="acciones">
-                                <button class="boton boton-icono boton-contorno btn-edit-gal" data-id="${g.id}" title="Editar">✏️</button>
-                                <button class="boton boton-icono boton-destructivo btn-del-gal" data-id="${g.id}" title="Eliminar">🗑️</button>
+                                <button class="boton boton-icono boton-contorno btn-edit-gal" data-id="${g.id}" title="Editar"><i class="ti ti-pencil"></i></button>
+                                <button class="boton boton-icono boton-destructivo btn-del-gal" data-id="${g.id}" title="Eliminar"><i class="ti ti-trash"></i></button>
                             </div>
                         </td>
                     </tr>`;
                 }).join("");
+                _cachGaleria = galeria;
                 actualizarMetricasGaleria(galeria);
+                actualizarDashboard();
             }
         } catch (e) {
             console.error(e);
@@ -112,52 +211,128 @@ async function cargarDatos() {
 
 function actualizarMetricasGaleria(galeria) {
     const label = document.getElementById("label-galeria-info");
-    if (!label) return;
-
-    const total = galeria.length;
-
-    label.className = "stock-info-label ok";
-    label.innerHTML = `
-        <div style="display:flex; align-items:center; gap:0.75rem;">
-            <span class="status-dot" style="background-color:#9ca3af"></span>
-            <span style="font-weight:600;">Eventos Pasados</span>
-        </div>
-        <div class="status-divider"></div>
-        <div class="status-metric">
-            <span>Total: <strong>${total}</strong></span>
-        </div>
-    `;
+    if (label) {
+        const total = galeria.length;
+        label.className = "module-metric-badge";
+        label.innerHTML = `<span class="status-dot" style="background-color:#9ca3af"></span>${total} foto${total !== 1 ? 's' : ''} en galería`;
+    }
+    const badge = document.getElementById('sidebar-badge-galeria');
+    if (badge) badge.textContent = galeria.length;
 }
 
 function actualizarMetricas(eventos) {
     const label = document.getElementById("label-status-info");
-    if (!label) return;
-
-    const total = eventos.length;
-    const activos = eventos.filter(e => e.activo).length;
-    const inactivos = total - activos;
-
-    label.className = "stock-info-label ok";
-    label.innerHTML = `
-        <div style="display:flex; align-items:center; gap:0.75rem;">
-            <span class="status-dot" style="background-color:${activos > 0 ? '#10b981' : '#9ca3af'}"></span>
-            <span style="font-weight:600;">Próximos Eventos</span>
-        </div>
-        <div class="status-divider"></div>
-        <div class="status-metric">
-            <span>Total: <strong>${total}</strong></span>
-            <span style="opacity:0.3; margin:0 5px;">|</span>
-            <span>Activos: <strong>${activos}</strong></span>
-            <span style="opacity:0.3; margin:0 5px;">|</span>
-            <span>Inactivos: <strong>${inactivos}</strong></span>
-        </div>
-    `;
+    if (label) {
+        const total = eventos.length;
+        const activos = eventos.filter(e => e.activo).length;
+        label.className = "module-metric-badge";
+        label.innerHTML = `<span class="status-dot"></span>${activos} activo${activos !== 1 ? 's' : ''} · ${total} total`;
+    }
+    const badge = document.getElementById('sidebar-badge-eventos');
+    if (badge) badge.textContent = eventos.length;
 }
 
-// --- SETUP LISTENERS ---
+// ============================================================
+//  DASHBOARD STATS + WIDGETS
+// ============================================================
+
+function actualizarDashboard() {
+    const eventos = _cachEventos;
+    const galeria = _cachGaleria;
+
+    // Stats
+    const totalEl   = document.getElementById('stat-val-total');
+    const activosEl = document.getElementById('stat-val-activos');
+    const galeriaEl = document.getElementById('stat-val-galeria');
+    const proximoEl = document.getElementById('stat-val-proximo');
+
+    if (totalEl)   totalEl.textContent   = eventos.length;
+    if (activosEl) activosEl.textContent = eventos.filter(e => e.activo).length;
+    if (galeriaEl) galeriaEl.textContent = galeria.length;
+
+    if (proximoEl) {
+        const activos = eventos
+            .filter(e => e.activo && e.fecha)
+            .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+        if (activos.length > 0) {
+            const next = activos[0];
+            proximoEl.textContent = next.titulo;
+            proximoEl.classList.add('stat-val-sm');
+        } else {
+            proximoEl.textContent = '—';
+        }
+    }
+
+    // Widget Eventos
+    renderWidgetEventos(eventos.slice(0, 5));
+
+    // Widget Galería
+    renderWidgetGaleria(galeria.slice(0, 5));
+}
+
+function renderWidgetEventos(eventos) {
+    const list = document.getElementById('widget-eventos-list');
+    if (!list) return;
+
+    if (!eventos || eventos.length === 0) {
+        list.innerHTML = '<div class="widget-empty">No hay eventos cargados</div>';
+        return;
+    }
+
+    list.innerHTML = eventos.map(e => {
+        const fecha = e.fecha ? new Date(e.fecha).toLocaleDateString('es-AR', {day:'2-digit', month:'short', year:'numeric'}) : '';
+        const badge = e.activo
+            ? '<span class="widget-item-badge badge-activo">Activo</span>'
+            : '<span class="widget-item-badge badge-inactivo">Oculto</span>';
+        const img = e.imagen_portada
+            ? `<img src="${e.imagen_portada}" alt="${e.titulo}" class="widget-item-img">`
+            : `<div class="widget-item-img-placeholder"><i class="ti ti-calendar"></i></div>`;
+
+        return `
+        <div class="widget-item">
+            ${img}
+            <div class="widget-item-body">
+                <div class="widget-item-title">${e.titulo}</div>
+                <div class="widget-item-sub">${fecha}</div>
+            </div>
+            ${badge}
+        </div>`;
+    }).join('');
+}
+
+function renderWidgetGaleria(galeria) {
+    const list = document.getElementById('widget-galeria-list');
+    if (!list) return;
+
+    if (!galeria || galeria.length === 0) {
+        list.innerHTML = '<div class="widget-empty">No hay fotos en galería</div>';
+        return;
+    }
+
+    list.innerHTML = galeria.map(g => {
+        const fecha = g.fecha ? new Date(g.fecha).toLocaleDateString('es-AR', {timeZone:'UTC', day:'2-digit', month:'short', year:'numeric'}) : '';
+        const img = g.imagen
+            ? `<img src="${g.imagen}" alt="${g.titulo}" class="widget-item-img">`
+            : `<div class="widget-item-img-placeholder"><i class="ti ti-photo"></i></div>`;
+
+        return `
+        <div class="widget-item">
+            ${img}
+            <div class="widget-item-body">
+                <div class="widget-item-title">${g.titulo}</div>
+                <div class="widget-item-sub">${fecha}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ============================================================
+//  SETUP LISTENERS
+// ============================================================
 
 function setupListeners() {
-    // 1. Logout
+    // 1. Logout (sidebar)
     const btnLogout = document.getElementById("boton-logout-admin");
     if (btnLogout) {
         btnLogout.addEventListener("click", () => {
@@ -683,4 +858,138 @@ async function ejecutarEliminacion() {
         itemAEliminar = null;
         tipoEntidad = null;
     }
+}
+
+// ============================================================
+//  GESTIÓN WEB — Hero, Tickets, Redes Sociales
+// ============================================================
+
+async function cargarConfigWeb() {
+    try {
+        const config = await api.getConfigWeb();
+        if (!config) return;
+
+        if (config.hero_url)   mostrarPreviewWeb('hero',    config.hero_url);
+        if (config.banner_url) mostrarPreviewWeb('tickets', config.banner_url);
+
+        const mapa = { instagram: config.instagram, spotify: config.spotify, soundcloud: config.soundcloud, whatsapp: config.whatsapp };
+        Object.entries(mapa).forEach(([red, val]) => {
+            const input = document.getElementById(`config-${red}`);
+            if (input && val) input.value = val;
+        });
+    } catch (err) {
+        console.warn('No se pudo cargar config web:', err);
+    }
+}
+
+function mostrarPreviewWeb(tipo, url, isVideo = false) {
+    const wrap = document.getElementById(`wrap-preview-${tipo}`);
+    if (!wrap) return;
+
+    // Auto-detectar video por extensión de URL si no se indicó explícitamente
+    if (!isVideo) {
+        const ext = url.split('?')[0].split('.').pop().toLowerCase();
+        isVideo = ['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(ext);
+    }
+
+    if (isVideo) {
+        wrap.innerHTML = `<video src="${url}" autoplay muted loop playsinline style="width:100%; height:160px; object-fit:cover; display:block;"></video>`;
+    } else {
+        wrap.innerHTML = `<img src="${url}" alt="Preview ${tipo}" style="width:100%; height:160px; object-fit:cover; display:block;">`;
+    }
+}
+
+function setupGestionWeb() {
+    setupWebUpload('hero',    'file-hero-web',    'file-name-hero-web',    'upload-hero-web',    'btn-guardar-hero');
+    setupWebUpload('tickets', 'file-tickets-web', 'file-name-tickets-web', 'upload-tickets-web', 'btn-guardar-tickets');
+
+    const btnRedes = document.getElementById('btn-guardar-redes');
+    if (btnRedes) {
+        btnRedes.addEventListener('click', async () => {
+            const campos = {};
+            ['instagram', 'spotify', 'soundcloud', 'whatsapp'].forEach(red => {
+                const input = document.getElementById(`config-${red}`);
+                if (input) campos[red] = input.value.trim();
+            });
+            try {
+                await api.saveConfigWeb(campos);
+                showToast('Redes sociales guardadas');
+            } catch (err) {
+                showToast('Error al guardar redes: ' + err.message, 'error');
+            }
+        });
+    }
+}
+
+function setupWebUpload(tipo, fileInputId, fileNameId, uploadAreaId, saveBtnId) {
+    const fileInput  = document.getElementById(fileInputId);
+    const saveBtn    = document.getElementById(saveBtnId);
+    const uploadArea = document.getElementById(uploadAreaId);
+
+    if (!fileInput || !saveBtn) return;
+
+    if (uploadArea) {
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+                mostrarPreviewWeb(tipo, URL.createObjectURL(file), file.type.startsWith('video/'));
+                const nameEl = document.getElementById(fileNameId);
+                if (nameEl) nameEl.textContent = file.name;
+                saveBtn.disabled = false;
+            }
+        });
+    }
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            mostrarPreviewWeb(tipo, URL.createObjectURL(file), file.type.startsWith('video/'));
+            const nameEl = document.getElementById(fileNameId);
+            if (nameEl) nameEl.textContent = file.name;
+            saveBtn.disabled = false;
+        }
+    });
+
+    saveBtn.addEventListener('click', async () => {
+        const file = fileInput.files[0];
+        if (!file) {
+            showToast('Seleccioná una imagen primero', 'error');
+            return;
+        }
+
+        const originalText = saveBtn.textContent;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = 'Subiendo... <span class="spinner"></span>';
+
+        try {
+            const result = await api.uploadImage(file);
+            if (!result || !result.imageUrl) throw new Error('No se obtuvo URL de imagen');
+
+            const campo = tipo === 'hero' ? { hero_url: result.imageUrl } : { banner_url: result.imageUrl };
+            await api.saveConfigWeb(campo);
+
+            mostrarPreviewWeb(tipo, result.imageUrl);
+            fileInput.value = '';
+            const nameEl = document.getElementById(fileNameId);
+            if (nameEl) nameEl.textContent = 'Ningún archivo seleccionado';
+            saveBtn.disabled = false;
+            showToast(`Imagen de ${tipo === 'hero' ? 'Portada' : 'Banner'} guardada`);
+        } catch (err) {
+            console.error(err);
+            showToast('Error al subir imagen: ' + err.message, 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
+    });
 }

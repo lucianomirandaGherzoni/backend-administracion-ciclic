@@ -190,6 +190,34 @@ async function eliminarImagen(req, res) {
     }
 }
 
+// --- CONTROLADORES CONFIG WEB ---
+
+async function obtenerConfigWeb(req, res) {
+    try {
+        const config = await modelo.obtenerConfigWeb();
+        res.status(200).json(config);
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al obtener config web.', detalle: error.message });
+    }
+}
+
+async function guardarConfigWeb(req, res) {
+    try {
+        const campos = req.body;
+        const camposPermitidos = ['hero_url', 'banner_url', 'instagram', 'spotify', 'soundcloud', 'whatsapp'];
+        const camposFiltrados = Object.fromEntries(
+            Object.entries(campos).filter(([k]) => camposPermitidos.includes(k))
+        );
+        if (Object.keys(camposFiltrados).length === 0) {
+            return res.status(400).json({ mensaje: 'No se enviaron campos válidos.' });
+        }
+        const actualizado = await modelo.guardarConfigWeb(camposFiltrados);
+        res.status(200).json({ mensaje: 'Config guardada.', config: actualizado });
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al guardar config web.', detalle: error.message });
+    }
+}
+
 export default {
     obtenerGaleria,
     obtenerItemGaleria,
@@ -203,5 +231,7 @@ export default {
     modificarEvento,
     eliminarEvento,
     subirImagen,
-    eliminarImagen
+    eliminarImagen,
+    obtenerConfigWeb,
+    guardarConfigWeb
 };

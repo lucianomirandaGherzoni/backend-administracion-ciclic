@@ -31,4 +31,8 @@ rutasApi.delete('/api/v1/eventos/:id', controlador.eliminarEvento);
 rutasApi.post('/api/v1/upload-image', upload.single('image'), controlador.subirImagen);
 rutasApi.delete('/api/v1/delete-image', controlador.eliminarImagen);
 
+// --- Rutas Config Web ---
+rutasApi.get('/api/v1/config-web', controlador.obtenerConfigWeb);
+rutasApi.patch('/api/v1/config-web', controlador.guardarConfigWeb);
+
 export default rutasApi;
